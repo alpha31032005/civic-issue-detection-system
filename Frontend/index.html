@@ -125,7 +125,7 @@
         try {
             console.log("Here hitting the try block")
             const response = await axios.post(
-                "http://127.0.0.1:8000/predict",   // 🔁 CHANGE AFTER DEPLOYMENT
+                "https://civic-ml-api.onrender.com/predict",   // connecting to render backend
                 formData,
                 {
                     headers: {
