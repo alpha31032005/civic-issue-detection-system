@@ -93,7 +93,7 @@
     </div>
 
     <div class="footer">
-        Final Year Project – ML Powered Civic Analytics
+        ML Module for Civic Issue Detection
     </div>
 </div>
 
@@ -134,11 +134,20 @@
                 }
             );
 
-            resultBox.innerHTML = `
-                <b>Predicted Issue:</b> ${response.data.predicted_class}<br>
-                <b>Confidence:</b> ${response.data.confidence}%
-            `;
+            if (response.data.predicted_class === "unknown") {
+                resultBox.innerHTML = `
+                    <b>Result:</b> Unknown Image<br>
+                    <i>${response.data.message}</i><br>
+                    <b>Confidence:</b> ${response.data.confidence}%
+                `;
+            } else {
+                resultBox.innerHTML = `
+                    <b>Predicted Issue:</b> ${response.data.predicted_class}<br>
+                    <b>Confidence:</b> ${response.data.confidence}%
+                `;
+            }
         }
+
         catch (error) {
             console.error(error);
             resultBox.innerText = "❌ Error connecting to backend API";

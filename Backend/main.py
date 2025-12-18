@@ -10,6 +10,8 @@ from database import SessionLocal, engine
 from models import Prediction
 import models
 
+CONFIDENCE_THRESHOLD = 60.0  # percentage
+
 # -------------------------
 # APP INIT
 # -------------------------
@@ -77,6 +79,13 @@ async def predict_image(
     preds = model.predict(img_array)
     idx = int(np.argmax(preds))
     confidence = float(preds[0][idx]) * 100
+
+    if confidence < CONFIDENCE_THRESHOLD:
+        return {
+            "predicted_class": "unknown",
+            "confidence": round(confidence, 2),
+            "message": "Uploaded image does not match known civic issue categories"
+        }
 
     record = Prediction(
         filename=file.filename,
