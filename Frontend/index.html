@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Civic Issue Classification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- AXIOS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #preview {
+            margin-top: 15px;
+            max-width: 100%;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #eef3ff;
+            font-size: 16px;
+            color: #333;
+            min-height: 40px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🚦 Civic Issue Classifier</h1>
+
+    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+
+    <img id="preview" alt="Image Preview">
+
+    <button onclick="sendImage()">Predict Issue</button>
+
+    <div class="result-box" id="resultBox">
+        Prediction result will appear here
+    </div>
+
+    <div class="footer">
+        Final Year Project – ML Powered Civic Analytics
+    </div>
+</div>
+
+<script>
+    let selectedFile = null;
+
+    function previewImage(event) {
+        const img = document.getElementById("preview");
+        selectedFile = event.target.files[0];
+
+        if (selectedFile) {
+            img.src = URL.createObjectURL(selectedFile);
+            img.style.display = "block";
+        }
+    }
+
+    async function sendImage() {
+        if (!selectedFile) {
+            alert("Please upload an image first!");
+            return;
+        }
+
+        const resultBox = document.getElementById("resultBox");
+        resultBox.innerText = "⏳ Predicting...";
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            console.log("Here hitting the try block")
+            const response = await axios.post(
+                "http://127.0.0.1:8000/predict",   // 🔁 CHANGE AFTER DEPLOYMENT
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
+
+            resultBox.innerHTML = `
+                <b>Predicted Issue:</b> ${response.data.predicted_class}<br>
+                <b>Confidence:</b> ${response.data.confidence}%
+            `;
+        }
+        catch (error) {
+            console.error(error);
+            resultBox.innerText = "❌ Error connecting to backend API";
+        }
+    }
+</script>
+
+</body>
+</html>
